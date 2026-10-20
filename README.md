@@ -5,7 +5,7 @@
 - **Roll Number:** M26MAC003  
 - **Deterministic Seed:** 26003 (Derived strictly from numeric characters of roll number: `2`, `6`, `0`, `0`, `3`)  
 - **Repository:** `https://github.com/bhisham-sharma/ml-face-recognition-ensembles`  
-- **Final Commit Hash:** `b8f41e2`  
+- **Final Commit Hash:** `a98dc1b` (Release `v1.0`)  
 
 ---
 
