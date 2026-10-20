@@ -1,0 +1,235 @@
+{
+  "toy_verification": {
+    "w_initial": [
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111,
+      0.1111111111111111
+    ],
+    "toy_preds": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "weighted_err": 0.3333333333333333,
+    "alpha_1": 1.3862943611198908,
+    "w_updated": [
+      0.05555555555555555,
+      0.05555555555555555,
+      0.05555555555555555,
+      0.05555555555555555,
+      0.05555555555555555,
+      0.05555555555555555,
+      0.22222222222222227,
+      0.22222222222222227,
+      0.22222222222222227
+    ]
+  },
+  "best_depth": 4,
+  "best_rounds": 100,
+  "boosting_grid": [
+    {
+      "depth": 1,
+      "rounds": 10,
+      "train_acc": 0.05,
+      "val_acc": 0.0375,
+      "test_acc": 0.05,
+      "actual_rounds": 10
+    },
+    {
+      "depth": 1,
+      "rounds": 25,
+      "train_acc": 0.05,
+      "val_acc": 0.05,
+      "test_acc": 0.05,
+      "actual_rounds": 25
+    },
+    {
+      "depth": 1,
+      "rounds": 50,
+      "train_acc": 0.05,
+      "val_acc": 0.0375,
+      "test_acc": 0.0375,
+      "actual_rounds": 50
+    },
+    {
+      "depth": 1,
+      "rounds": 100,
+      "train_acc": 0.22916666666666666,
+      "val_acc": 0.15,
+      "test_acc": 0.1625,
+      "actual_rounds": 100
+    },
+    {
+      "depth": 2,
+      "rounds": 10,
+      "train_acc": 0.09583333333333334,
+      "val_acc": 0.0625,
+      "test_acc": 0.0625,
+      "actual_rounds": 10
+    },
+    {
+      "depth": 2,
+      "rounds": 25,
+      "train_acc": 0.21666666666666667,
+      "val_acc": 0.1375,
+      "test_acc": 0.15,
+      "actual_rounds": 25
+    },
+    {
+      "depth": 2,
+      "rounds": 50,
+      "train_acc": 0.4083333333333333,
+      "val_acc": 0.175,
+      "test_acc": 0.2875,
+      "actual_rounds": 50
+    },
+    {
+      "depth": 2,
+      "rounds": 100,
+      "train_acc": 0.39166666666666666,
+      "val_acc": 0.1375,
+      "test_acc": 0.2125,
+      "actual_rounds": 100
+    },
+    {
+      "depth": 3,
+      "rounds": 10,
+      "train_acc": 0.25416666666666665,
+      "val_acc": 0.1125,
+      "test_acc": 0.1375,
+      "actual_rounds": 10
+    },
+    {
+      "depth": 3,
+      "rounds": 25,
+      "train_acc": 0.25416666666666665,
+      "val_acc": 0.125,
+      "test_acc": 0.125,
+      "actual_rounds": 25
+    },
+    {
+      "depth": 3,
+      "rounds": 50,
+      "train_acc": 0.575,
+      "val_acc": 0.3125,
+      "test_acc": 0.2875,
+      "actual_rounds": 50
+    },
+    {
+      "depth": 3,
+      "rounds": 100,
+      "train_acc": 0.8708333333333333,
+      "val_acc": 0.3625,
+      "test_acc": 0.3,
+      "actual_rounds": 100
+    },
+    {
+      "depth": 4,
+      "rounds": 10,
+      "train_acc": 0.2833333333333333,
+      "val_acc": 0.175,
+      "test_acc": 0.1875,
+      "actual_rounds": 10
+    },
+    {
+      "depth": 4,
+      "rounds": 25,
+      "train_acc": 0.5666666666666667,
+      "val_acc": 0.1875,
+      "test_acc": 0.2125,
+      "actual_rounds": 25
+    },
+    {
+      "depth": 4,
+      "rounds": 50,
+      "train_acc": 0.6208333333333333,
+      "val_acc": 0.2,
+      "test_acc": 0.225,
+      "actual_rounds": 50
+    },
+    {
+      "depth": 4,
+      "rounds": 100,
+      "train_acc": 1.0,
+      "val_acc": 0.4625,
+      "test_acc": 0.4375,
+      "actual_rounds": 100
+    }
+  ],
+  "comparison_table": [
+    {
+      "learners": 25,
+      "bag_train": 1.0,
+      "bag_val": 0.85,
+      "bag_test": 0.7875,
+      "bag_time": 49.40536022186279,
+      "boost_train": 0.95,
+      "boost_val": 0.3375,
+      "boost_test": 0.4125,
+      "boost_time": 10.432089567184448
+    },
+    {
+      "learners": 50,
+      "bag_train": 1.0,
+      "bag_val": 0.825,
+      "bag_test": 0.8375,
+      "bag_time": 98.81072044372559,
+      "boost_train": 0.9958333333333333,
+      "boost_val": 0.425,
+      "boost_test": 0.45,
+      "boost_time": 21.87272834777832
+    },
+    {
+      "learners": 100,
+      "bag_train": 1.0,
+      "bag_val": 0.85,
+      "bag_test": 0.8625,
+      "bag_time": 197.62144088745117,
+      "boost_train": 1.0,
+      "boost_val": 0.4875,
+      "boost_test": 0.5375,
+      "boost_time": 49.52458715438843
+    }
+  ],
+  "heavyweight_sample": {
+    "index": 204,
+    "true_label": 34,
+    "final_weight": 0.07130615527388232,
+    "misclassified_count": 87,
+    "total_rounds": 100
+  },
+  "robustness": {
+    "tree_clean_acc": 0.5,
+    "tree_clean_conf": 0.95625,
+    "tree_mask_acc": 0.05,
+    "tree_mask_conf": 1.0,
+    "bag_clean_acc": 0.7875,
+    "bag_clean_conf": 0.4065,
+    "bag_mask_acc": 0.55,
+    "bag_mask_conf": 0.275,
+    "boost_clean_acc": 0.4375,
+    "boost_clean_conf": 0.11743829279806661,
+    "boost_mask_acc": 0.325,
+    "boost_mask_conf": 0.11388880845277498,
+    "divergent_sample": {
+      "test_idx": 0,
+      "y_true": 0,
+      "bag_clean": 0,
+      "bag_mask": 0,
+      "boost_clean": 12,
+      "boost_mask": 12
+    }
+  }
+}

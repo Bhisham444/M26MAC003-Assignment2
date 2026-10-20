@@ -1,0 +1,98 @@
+{
+  "part_a": {
+    "single_tree": {
+      "bias_squared": 0.3809166666666667,
+      "variance": 0.6265833333333333,
+      "total_loss": 1.0074999999999998,
+      "acc_mean": 0.49624999999999997,
+      "acc_std": 0.05926195378711931
+    },
+    "bagging": {
+      "bias_squared": 0.5065921333333333,
+      "variance": 0.0481172,
+      "total_loss": 0.5547093333333333,
+      "acc_mean": 0.7104166666666667,
+      "acc_std": 0.04096280494410617
+    },
+    "boosting": {
+      "bias_squared": 0.8797962123509027,
+      "variance": 0.01872373027993661,
+      "total_loss": 0.8985199426308392,
+      "acc_mean": 0.34708333333333335,
+      "acc_std": 0.09245963834139857
+    }
+  },
+  "part_b": [
+    {
+      "name": "Shallow (Depth 4)",
+      "params": {
+        "max_depth": 4,
+        "min_samples_leaf": 1
+      },
+      "tree_bias": 0.8589949516040984,
+      "tree_var": 0.07476959866045185,
+      "tree_acc": 0.09791666666666667,
+      "bag_bias": 0.8849790694444444,
+      "bag_var": 0.013305430555555556,
+      "bag_acc": 0.29624999999999996,
+      "var_removed": 0.0614641681048963,
+      "pct_var_removed": 82.2047586265924,
+      "acc_improvement": 0.1983333333333333
+    },
+    {
+      "name": "Selected (None, leaf=2)",
+      "params": {
+        "max_depth": null,
+        "min_samples_leaf": 2
+      },
+      "tree_bias": 0.3809166666666667,
+      "tree_var": 0.6265833333333333,
+      "tree_acc": 0.49624999999999997,
+      "bag_bias": 0.5040592055555556,
+      "bag_var": 0.024418544444444443,
+      "bag_acc": 0.7704166666666666,
+      "var_removed": 0.6021647888888888,
+      "pct_var_removed": 96.10290552821739,
+      "acc_improvement": 0.27416666666666667
+    },
+    {
+      "name": "Deep (Depth 16)",
+      "params": {
+        "max_depth": 16,
+        "min_samples_leaf": 1
+      },
+      "tree_bias": 0.6374458079218032,
+      "tree_var": 0.22137249937476497,
+      "tree_acc": 0.2816666666666666,
+      "bag_bias": 0.66050495,
+      "bag_var": 0.019763966666666667,
+      "bag_acc": 0.6462500000000001,
+      "var_removed": 0.2016085327080983,
+      "pct_var_removed": 91.07207682865435,
+      "acc_improvement": 0.3645833333333335
+    }
+  ],
+  "part_d_table": [
+    {
+      "model": "Selected Single Tree",
+      "clean_acc": 0.5,
+      "masked_acc": 0.05,
+      "bias_squared": 0.3809166666666667,
+      "variance": 0.6265833333333333
+    },
+    {
+      "model": "Bagging (B=25)",
+      "clean_acc": 0.7875,
+      "masked_acc": 0.55,
+      "bias_squared": 0.5065921333333333,
+      "variance": 0.0481172
+    },
+    {
+      "model": "Boosting (d=4,r=100)",
+      "clean_acc": 0.4375,
+      "masked_acc": 0.325,
+      "bias_squared": 0.8797962123509027,
+      "variance": 0.01872373027993661
+    }
+  ]
+}
