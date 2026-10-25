@@ -1,6 +1,6 @@
 # Bagging, Boosting, and Bias-Variance on Face Identification
 
-**Machine Learning (CS/AI) — Assignment 2**  
+**Machine Learning  — Assignment 2**  
 - **Name**: Bhisham Sharma  
 - **Roll Number:** M26MAC003  
 - **Deterministic Seed:** 26003 (roll number numerical value: `2`, `6`, `0`, `0`, `3`)  
