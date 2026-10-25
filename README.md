@@ -5,7 +5,6 @@
 - **Roll Number:** M26MAC003  
 - **Deterministic Seed:** 26003 (roll number numerical value: `2`, `6`, `0`, `0`, `3`)  
 - **Repository:** `https://github.com/Bhisham444/M26MAC003-Assignment2`  
-- **Final Commit Hash:** `12cf1ad` (Release `v1.0`)  
 
 ---
 
