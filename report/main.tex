@@ -22,9 +22,8 @@
 
 \author{
 \textbf{Bhisham Sharma} \quad (\textbf{Roll Number: M26MAC003})\\
-Department of Computer Science and Engineering\\
 \url{https://github.com/Bhisham444/M26MAC003-Assignment2}\\
-Final Commit Hash: \texttt{f667973} (Release \texttt{v1.0})
+Final Commit Hash: \texttt{80be87a} (Release \texttt{v1.0})
 }
 
 \maketitle
@@ -40,8 +39,8 @@ Decision trees are simple to understand and train, but when we use them on high-
 
 To solve this problem, ensemble methods combine multiple models. In this assignment, I study two popular ensemble techniques:
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Bagging (Bootstrap Aggregation)}~\cite{breiman1996bagging}: Here, I train multiple deep decision trees on different bootstrap samples of the training set and average their predictions through majority voting. This helps reduce the variance without increasing bias.
-    \item \textbf{Boosting (SAMME AdaBoost)}~\cite{hastie2009samme}: Here, I train shallow trees sequentially. In each round, the algorithm increases the weights of images that were classified incorrectly by earlier trees, forcing the new trees to focus on harder cases.
+    \item \textbf{Bagging (Bootstrap Aggregation)}: Here, I train multiple deep decision trees on different bootstrap samples of the training set and average their predictions through majority voting. This helps reduce the variance without increasing bias.
+    \item \textbf{Boosting (SAMME AdaBoost)}: Here, I train shallow trees sequentially. In each round, the algorithm increases the weights of images that were classified incorrectly by earlier trees, forcing the new trees to focus on harder cases.
 \end{enumerate}
 
 I built this entire project following all the assignment guidelines. My roll number is \texttt{M26MAC003}, so I use the deterministic seed $26003$ for all random number generators. I implemented both the Bagging and SAMME Boosting algorithms from scratch in Python, relying on scikit-learn only for the individual tree fits. In the sections below, I walk through my baseline single tree, my custom bagging classifier, my boosting implementation, and my measured bias-variance results.
@@ -192,7 +191,7 @@ As visualized in Figure~\ref{fig:q1_error_faces}:
 \label{sec:q2}
 
 \subsection{SAMME AdaBoost Formulation}
-For $K = 40$ classes, I implemented the Multi-class SAMME algorithm~\cite{hastie2009samme} from scratch. Initial sample weights are set uniformly: $w_1(i) = 1/N$. At each round $t$:
+For $K = 40$ classes, I implemented the Multi-class SAMME algorithm from scratch. Initial sample weights are set uniformly: $w_1(i) = 1/N$. At each round $t$:
 \begin{enumerate}[leftmargin=*]
     \item I fit weak learner $h_t(x)$ using distribution $w_t$.
     \item I compute weighted error $\epsilon_t = \sum_{i} w_t(i) \mathbb{I}[y_i \neq h_t(x_i)] / \sum_i w_t(i)$.
@@ -360,9 +359,9 @@ Table~\ref{tab:q3_depth} and Figure~\ref{fig:q3_depth} quantify how depth shifts
 
 \begin{table}[h]
 \centering
-\small
 \caption{Depth variation study: Bias, variance, and variance removed by 100-tree Bagging.}
 \label{tab:q3_depth}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccccc}
 \toprule
 Depth Regime & Tree $\text{Bias}^2$ & Tree Var & Bag $\text{Bias}^2$ & Bag Var & $\Delta\text{Var}$ & Acc Gain \\
@@ -371,7 +370,8 @@ Shallow ($d=4$) & 0.8590 & 0.0748 & 0.8850 & 0.0133 & 0.0615 (82.2\%) & +19.8\% 
 Selected (None, 2) & 0.3809 & 0.6266 & 0.5041 & 0.0244 & 0.6022 (96.1\%) & +27.4\% \\
 Deep ($d=16, 1$) & 0.6374 & 0.2214 & 0.6605 & 0.0198 & 0.2016 (91.1\%) & +36.5\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[t]
@@ -426,10 +426,5 @@ Boosting ($d=4, r=100$) & 43.75\% & 32.50\% & 0.8798 & 0.0187 \\
 
 \section{Conclusion}
 In this assignment, I demonstrated the real-world differences between Bagging and Boosting on raw image data. Bagging works wonderfully because diverse, low-bias decision trees cancel out each other's variance errors while retaining facial recognition capabilities under occlusion. In contrast, SAMME AdaBoost struggles because it repeatedly inflates the weights of hard, noisy images, trapping shallow trees in repetitive errors. Finally, my bias-variance measurements prove that light regularization ($\text{min\_samples\_leaf}=2$) beats unconstrained deep trees by eliminating noise memorization.
-
-{\small
-\bibliographystyle{ieee_fullname}
-\bibliography{references}
-}
 
 \end{document}

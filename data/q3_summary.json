@@ -81,9 +81,9 @@
       "variance": 0.6265833333333333
     },
     {
-      "model": "Bagging (B=25)",
-      "clean_acc": 0.7875,
-      "masked_acc": 0.55,
+      "model": "Bagging (B=50)",
+      "clean_acc": 0.8125,
+      "masked_acc": 0.5125,
       "bias_squared": 0.5065921333333333,
       "variance": 0.0481172
     },

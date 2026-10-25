@@ -47,12 +47,12 @@ Selected Booster Metrics: Train Acc=1.0000, Val Acc=0.4625, Test Acc=0.4375
 --- Part 2(c): Head-to-Head Comparison: Bagging vs. Boosting ---
 Learners   Model        TrainAcc   ValAcc     TestAcc    TrainTime(s)  
 ----------------------------------------------------------------------
-25         Bagging      1.0000     0.7875     0.7750     68.89         
-25         Boosting     0.9500     0.3375     0.4125     12.73         
-50         Bagging      1.0000     0.8125     0.8125     137.79        
-50         Boosting     0.9958     0.4250     0.4500     24.95         
-100        Bagging      1.0000     0.8125     0.8125     275.57        
-100        Boosting     1.0000     0.4875     0.5375     50.44         
+25         Bagging      1.0000     0.7875     0.7750     77.34         
+25         Boosting     0.9500     0.3375     0.4125     14.57         
+50         Bagging      1.0000     0.8125     0.8125     154.68        
+50         Boosting     0.9958     0.4250     0.4500     28.55         
+100        Bagging      1.0000     0.8125     0.8125     309.35        
+100        Boosting     1.0000     0.4875     0.5375     55.36         
 ----------------------------------------------------------------------
 
 Heavyweight Sample Analysis:
