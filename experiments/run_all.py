@@ -15,8 +15,8 @@ def main():
     start_total = time.time()
     print("=" * 80)
     print("MACHINE LEARNING ASSIGNMENT 2")
-    print("Student: Bhisham Sharma | Roll Number: M26MAC003")
-    print("Deterministic Seed: 26003 ")
+    print("Name: Bhisham Sharma | Roll Number: M26MAC003")
+    print("My Roll no. M26MAC003 ; Seed: 26003 ")
     print("=" * 80)
 
     # Question 1
