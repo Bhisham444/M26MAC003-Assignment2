@@ -24,57 +24,57 @@
 \textbf{Bhisham Sharma} \quad (\textbf{Roll Number: M26MAC003})\\
 Department of Computer Science and Engineering\\
 \url{https://github.com/Bhisham444/M26MAC003-Assignment2}\\
-Final Commit Hash: \texttt{12cf1ad} (Release \texttt{v1.0})
+Final Commit Hash: \texttt{f667973} (Release \texttt{v1.0})
 }
 
 \maketitle
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-High-dimensional multiclass image classification poses severe challenges to greedy non-parametric learners such as Decision Trees, where sample scarcity ($N_{\text{train}} \ll D$) frequently induces acute variance-driven overfitting. In this work, we present an exhaustive empirical study on the AT\&T Olivetti Faces benchmark ($N=400$, 40 identities, 4096-dimensional flattened raw pixels) under strict identity-stratified partitioning seeded deterministically by the student roll number (\texttt{M26MAC003} $\to$ seed $26003$). We investigate single tree baselines, custom bootstrap aggregating (Bagging), and multiclass SAMME AdaBoost from scratch without dimensionality reduction. We analyze out-of-bag convergence, pairwise tree disagreement, vote margin distributions, and sample-weighting pathologies under severe class imbalances. Furthermore, we implement an exact vector $L_2$ bias-variance decomposition across 30 resampled training replicates. Finally, we assess structural robustness against a central $16 \times 16$ facial occlusion, revealing distinct resilience patterns between independent model averaging and iterative gradient-like focus reweighting.
+In this assignment, I explore how Decision Trees, Bagging, and Multi-Class Boosting (SAMME) perform on the AT\&T Olivetti Faces dataset (40 identities, 400 images of size $64 \times 64$, giving 4096 raw pixels per image). As instructed, my student roll number is \texttt{M26MAC003}, so I use the deterministic random seed $26003$ for all dataset splitting and sampling. I do not use PCA or any dimensionality reduction, training all models directly on the raw pixel values. I implement both Bagging and SAMME Boosting completely from scratch, using only scikit-learn's basic \texttt{DecisionTreeClassifier} as the weak learner. Through my experiments, I evaluate tree depths, out-of-bag accuracy, pairwise tree disagreement, and vote margins. I also test how these models hold up when the center $16 \times 16$ region of each test face is blacked out. Finally, I measure Bias$^2$ and Variance directly across 30 resampled training runs. My results show that Bagging cuts single-tree variance by over 92\% and remains robust under occlusion, whereas Boosting focuses too heavily on a few difficult faces, leading to low variance but high bias.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
-Non-parametric decision trees offer intuitive, interpretable decision boundaries by recursively partitioning feature space along orthogonal hyperplanes. However, when applied to uncompressed image classification tasks—such as facial recognition on the Olivetti dataset where the input dimensionality ($D = 4096$ raw pixels) substantially exceeds the per-identity sample count ($N_{\text{class}} = 6$ training samples)—single decision trees exhibit extreme variance. Small stochastic perturbations in the training set alter the greedy top-level splits, producing completely divergent trees that memorize idiosyncrasies rather than invariant identity representations.
+Decision trees are simple to understand and train, but when we use them on high-dimensional data like images with very few training examples, they suffer from high variance. In the Olivetti Faces dataset, each image has 4096 raw pixels, while I only have 6 training images per person. A single decision tree can easily latch onto noise or background pixels and overfit the training images.
 
-Ensemble methodologies mitigate these shortcomings through two foundational paradigms:
+To solve this problem, ensemble methods combine multiple models. In this assignment, I study two popular ensemble techniques:
 \begin{enumerate}[leftmargin=*]
-    \item \textbf{Bootstrap Aggregation (Bagging)}~\cite{breiman1996bagging}: Reduces estimator variance by averaging the predictions of independent, deeply grown, low-bias trees fitted to bootstrap replicates of the training distribution.
-    \item \textbf{Adaptive Boosting (SAMME AdaBoost)}~\cite{hastie2009samme}: Reduces estimator bias and variance sequentially by dynamically re-weighting misclassified samples, constructing an additive model of weak learners that specializes in hard decision boundaries.
+    \item \textbf{Bagging (Bootstrap Aggregation)}~\cite{breiman1996bagging}: Here, I train multiple deep decision trees on different bootstrap samples of the training set and average their predictions through majority voting. This helps reduce the variance without increasing bias.
+    \item \textbf{Boosting (SAMME AdaBoost)}~\cite{hastie2009samme}: Here, I train shallow trees sequentially. In each round, the algorithm increases the weights of images that were classified incorrectly by earlier trees, forcing the new trees to focus on harder cases.
 \end{enumerate}
 
-In this paper, we document an end-to-end experimental investigation fulfilling all requirements of Machine Learning Assignment 2. All bagging and boosting algorithms are developed entirely from scratch without high-level library ensemble wrappers. We adhere to exact reproducibility constraints: our identity-stratified split is governed by seed $26003$ (extracted from roll number \texttt{M26MAC003}), and model selection is driven strictly by validation accuracy.
+I built this entire project following all the assignment guidelines. My roll number is \texttt{M26MAC003}, so I use the deterministic seed $26003$ for all random number generators. I implemented both the Bagging and SAMME Boosting algorithms from scratch in Python, relying on scikit-learn only for the individual tree fits. In the sections below, I walk through my baseline single tree, my custom bagging classifier, my boosting implementation, and my measured bias-variance results.
 
 \section{Dataset Protocol and Common Setup}
 \label{sec:setup}
-The AT\&T Olivetti Faces dataset comprises 40 distinct human subjects, each captured in 10 grayscale images of resolution $64 \times 64$ ($400$ images total). As prescribed, images are represented strictly as flattened raw intensity vectors $x_i \in [0, 1]^{4096}$, without PCA or linear dimensionality reduction.
+The AT\&T Olivetti Faces dataset consists of 400 grayscale images across 40 different people (10 images per person). Each image is $64 \times 64$ pixels. As required, I flattened each image into a 4096-dimensional vector of raw pixel values ($x_i \in [0, 1]^{4096}$) without applying any PCA or feature extraction.
 
-\subsection{Identity-Stratified Partitioning}
-To prevent identity leakage while ensuring identical class representations across splits, we partition the 10 images of each identity into:
+\subsection{Identity-Stratified Split}
+For every person in the dataset, I split their 10 images into three sets:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Training Set:} Exactly 6 images per class ($N_{\text{train}} = 240$ samples).
-    \item \textbf{Validation Set:} Exactly 2 images per class ($N_{\text{val}} = 80$ samples).
-    \item \textbf{Clean Test Set:} Exactly 2 images per class ($N_{\text{test}} = 80$ samples).
+    \item \textbf{Training Set:} Exactly 6 images per person ($240$ images total).
+    \item \textbf{Validation Set:} Exactly 2 images per person ($80$ images total).
+    \item \textbf{Clean Test Set:} Exactly 2 images per person ($80$ images total).
 \end{itemize}
-Random permutations within each identity are governed by \texttt{numpy.random.default\_rng(26003)}. The partition indices are serialized to \texttt{data/split\_indices.npz} and held invariant across all experiments.
+I generated this split using \texttt{numpy.random.default\_rng(seed=26003)}, saved the split indices into \texttt{data/split\_indices.npz}, and reused this exact partition across all experiments.
 
-\subsection{Masked Occlusion Benchmark}
-To assess out-of-distribution robustness, a second test set is constructed by corrupting the clean test images with a central $16 \times 16$ square occlusion:
+\subsection{Masked Test Set for Robustness}
+To test how robust my models are to missing facial features, I created a masked copy of the clean test set by setting the central $16 \times 16$ pixel square (rows 24 to 39 and columns 24 to 39) to zero:
 \begin{equation}
-    x_{\text{test, masked}}[u, v] = 0.0, \quad \forall u, v \in [24, 39],
+    x_{\text{test, masked}}[u, v] = 0.0, \quad \forall u, v \in [24, 39].
 \end{equation}
-effectively occluding the nasal bridge, ocular margins, and upper mouth. All models are trained exclusively on clean data.
+This hides key facial parts like the nose and mouth. All my models were trained strictly on clean images and then evaluated on both the clean and masked test sets.
 
 \section{Decision Tree Baseline and Bagging from Scratch}
 \label{sec:q1}
 
 \subsection{Single Tree Baseline Grid Search}
-We trained single \texttt{DecisionTreeClassifier} baselines spanning:
+I started by training a single \texttt{DecisionTreeClassifier} over a grid of hyperparameters:
 \begin{equation*}
     \text{max\_depth} \in \{2, 4, 8, 16, \text{None}\}, \quad \text{min\_samples\_leaf} \in \{1, 2, 4\}.
 \end{equation*}
-Table~\ref{tab:q1_grid} details the complete grid search.
+Table~\ref{tab:q1_grid} shows the complete grid search.
 
 \begin{table}[h]
 \centering
@@ -96,18 +96,20 @@ None & 4 & 98.33\% & 55.00\% & 51.25\% & 40 & 6.00 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Model Freezing and Leaf Dynamics:}
-Validation accuracy achieves its global maximum at $\text{max\_depth}=\text{None}$ and $\text{min\_samples\_leaf}=2$ ($55.00\%$). In accordance with the protocol, this configuration is frozen. As depth expands from $2$ to $\text{None}$, the number of terminal leaves grows from $3$ to $43$, while average leaf occupancy shrinks from $80.0$ to $5.58$ samples. At $\text{max\_depth}=\text{None}$ with $\text{min\_samples\_leaf}=1$, $9.09\%$ of leaves contain a single isolated training sample, indicating memorization of idiosyncratic facial details. Restricting $\text{min\_samples\_leaf}=2$ acts as a regularizer, eliminating singleton leaves ($0.00\%$) and lifting validation accuracy by $2.5\%$.
+\paragraph{Selecting and Freezing the Baseline Model:}
+Looking at validation accuracy, the best performance of $55.00\%$ is achieved when $\text{max\_depth}=\text{None}$ with $\text{min\_samples\_leaf}=2$. In accordance with the protocol, I froze this configuration. 
 
-\subsection{Custom Bagging from Scratch}
-Using the frozen tree architecture, we implemented \texttt{CustomBaggingClassifier} from scratch. For ensemble sizes $B \in \{1, 5, 10, 25, 50, 100, 200\}$, bootstrap replicates of size $N=240$ were drawn with replacement.
+As I increased the maximum tree depth from 2 up to unconstrained ($\text{None}$), the number of terminal leaves grew from 3 to 43, and the average number of samples per leaf dropped from 80.0 to 5.58. A depth-2 tree underfits badly (only 7.50\% accuracy) because 3 leaves can only name at most 3 of the 40 people. At full depth with $\text{min\_samples\_leaf}=1$, the tree fits the training set to 100\%, but $9.09\%$ of its leaves contain only 1 training image. Setting $\text{min\_samples\_leaf}=2$ acts as a regularizer, eliminating all singleton leaves ($0.00\%$), which prevents memorizing pixel noise and gave me a better validation score ($55.00\%$).
 
-\paragraph{Theoretical vs. Empirical Distinct Samples:}
-Drawing $N$ samples with replacement from an empirical pool of size $N$ implies that the probability of an individual sample avoiding selection in all $N$ draws is $(1 - 1/N)^N \approx e^{-1} \approx 0.3679$. The theoretical expectation of distinct samples is:
+\subsection{My Custom Bagging Implementation}
+Using this frozen tree setting, I implemented my custom bagging classifier from scratch. For ensemble sizes $B \in \{1, 5, 10, 25, 50, 100, 200\}$, I drew $B$ bootstrap samples of size $N=240$ with replacement and trained a tree on each sample.
+
+\paragraph{Distinct Examples vs. Theory:}
+When drawing 240 items with replacement from a pool of 240, the theoretical expected number of distinct examples in a bootstrap sample is:
 \begin{equation}
-    \mathbb{E}[D] = N \left[1 - \left(1 - \frac{1}{N}\right)^N\right] = 240 \times 0.6329 = 151.89.
+    \mathbb{E}[D] = N \left[1 - \left(1 - \frac{1}{N}\right)^N\right] = 240 \times 0.6329 = 151.89 \text{ (63.29\%)}.
 \end{equation}
-As reported in Table~\ref{tab:q1_bagging}, our empirical distinct sample counts across all bootstrap bags closely align with theory ($151.64$ to $153.00$, error $< 0.5\%$).
+In my experiments, the average number of distinct samples per bootstrap bag was $152.1$, which matches the theoretical value almost exactly ($< 0.5\%$ error). Table~\ref{tab:q1_bagging} shows how accuracy improves as more trees vote.
 
 \begin{table}[h]
 \centering
@@ -130,7 +132,17 @@ $B$ & Train & Val & Test & Distinct & OOB & Disagree. \\
 \end{table}
 
 \subsection{OOB Accuracy, Disagreement, and Vote Margin}
-Figure~\ref{fig:q1_dynamics} depicts Out-of-Bag (OOB) accuracy, pairwise tree disagreement, and mean vote margin as functions of $B$.
+For each value of $B$, I tracked three key quantities on the validation set, as plotted in Figure~\ref{fig:q1_dynamics}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Out-of-Bag (OOB) Accuracy:} For each training sample, only the trees that did not see that sample in their bootstrap bag vote on it. OOB accuracy rises from $35.6\%$ at $B=1$ to $80.4\%$ at $B=200$, closely tracking validation accuracy.
+    \item \textbf{Pairwise Disagreement:} I measured how often two trees in the ensemble disagree on an image:
+    \begin{equation}
+        \bar{D} = \frac{2}{B(B-1)} \sum_{i < j} \frac{1}{N_{\text{val}}} \sum_{k=1}^{N_{\text{val}}} \mathbb{I}[h_i(x_k) \neq h_j(x_k)].
+    \end{equation}
+    The disagreement jumps to $\approx 0.80$ at $B=5$ and stays flat across all $B \le 200$. This confirms that bootstrap sampling keeps the trees diverse.
+    \item \textbf{Vote Margin:} The average difference between the winning vote fraction and the runner-up fraction settles around $0.25$ once $B \ge 10$, reflecting consistent voting confidence.
+    \item \textbf{Do They Tell the Same Story?} Yes. The individual trees disagree strongly ($\bar{D} \approx 0.80$), but when their votes are averaged, the random errors cancel out, pushing OOB accuracy steadily upward.
+\end{itemize}
 
 \begin{figure}[t]
 \centering
@@ -139,21 +151,11 @@ Figure~\ref{fig:q1_dynamics} depicts Out-of-Bag (OOB) accuracy, pairwise tree di
 \label{fig:q1_dynamics}
 \end{figure}
 
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Pairwise Disagreement:} Disagreement is measured as:
-    \begin{equation}
-        \bar{D} = \frac{2}{B(B-1)} \sum_{i < j} \frac{1}{N_{\text{val}}} \sum_{k=1}^{N_{\text{val}}} \mathbb{I}[h_i(x_k) \neq h_j(x_k)].
-    \end{equation}
-    $\bar{D}$ jumps immediately from $0$ to $\approx 0.80$ at $B=5$ and remains virtually flat across all $B \le 200$. This confirms that bootstrap perturbation successfully de-correlates individual trees despite their shared architecture.
-    \item \textbf{Vote Margin:} The mean vote margin (winning vote fraction minus runner-up fraction) stabilizes around $0.25$ for $B \ge 10$, reflecting consistent confidence margins.
-    \item \textbf{Story Convergence:} Yes, OOB accuracy, disagreement, and margin tell a unified story: individual trees remain highly diverse ($\bar{D} \approx 0.80$), but collective aggregation reduces variance asymptotically, causing OOB accuracy to rise from $35.6\%$ to $80.4\%$.
-\end{itemize}
-
 \paragraph{Ensemble Size Selection:}
-Validation accuracy reaches its peak plateau at $B=25$ ($85.00\%$). By Occam's razor, we select $B^* = 25$ as our final frozen bagged model.
+Validation accuracy reaches its peak plateau at $B=25$ ($85.00\%$). By Occam's razor, I selected $B^* = 25$ as my final frozen bagged model because it gives maximum accuracy without unnecessary computation.
 
-\subsection{Robustness and Error Pathology}
-Table~\ref{tab:q1_robustness} contrasts the frozen single tree against the final bagged ensemble on clean and masked test sets.
+\subsection{Clean vs. Masked Robustness & Error Analysis}
+Table~\ref{tab:q1_robustness} contrasts my frozen single tree against the final bagged ensemble on clean and masked test sets.
 
 \begin{table}[h]
 \centering
@@ -179,26 +181,27 @@ Bagging ($B=25$) & \textbf{78.75\%} & 40.65\% & \textbf{55.00\%} & 27.50\% \\
 
 \paragraph{What Bagging Can and Cannot Reduce:}
 The single tree exhibits severe failure under occlusion: test accuracy drops from $50.0\%$ to $5.0\%$ (near random guess $1/40 = 2.5\%$), yet its prediction confidence surges to $100.0\%$. This occurs because zeroing out central pixels routes test samples down arbitrary splits to pure singleton leaves. In contrast, Bagging preserves $55.00\%$ accuracy under occlusion.
+
 As visualized in Figure~\ref{fig:q1_error_faces}:
 \begin{itemize}[leftmargin=*]
     \item \textbf{Correctable Errors (Variance):} Test samples \#1 and \#2 are corrected by bagging (from wrong classes 7 and 8 back to true classes 0 and 1). Individual trees latch onto noisy background pixels, but independent bootstrap samples cancel out these idiosyncratic errors.
-    \item \textbf{Uncorrectable Errors (Bias):} Test samples \#9 and \#18 fool both models. Here, the test face contains genuine non-linear lighting shifts or structural expressions unrepresented in any of the 6 training exemplars. Because all bootstrap trees suffer from identical representational bias, bagging cannot recover the identity.
+    \item \textbf{Uncorrectable Errors (Bias):} Test samples \#9 and \#18 fool both models. Here, the test face contains genuine lighting shifts or structural expressions unrepresented in any of the 6 training exemplars. Because all bootstrap trees suffer from identical representational bias, bagging cannot recover the identity.
 \end{itemize}
 
 \section{Multiclass Boosting from Scratch}
 \label{sec:q2}
 
 \subsection{SAMME AdaBoost Formulation}
-For $K = 40$ classes, we implemented the Multi-class SAMME algorithm~\cite{hastie2009samme} from scratch. Initial sample weights are set uniformly: $w_1(i) = 1/N$. At each round $t$:
+For $K = 40$ classes, I implemented the Multi-class SAMME algorithm~\cite{hastie2009samme} from scratch. Initial sample weights are set uniformly: $w_1(i) = 1/N$. At each round $t$:
 \begin{enumerate}[leftmargin=*]
-    \item Fit weak learner $h_t(x)$ using distribution $w_t$.
-    \item Compute weighted error $\epsilon_t = \sum_{i} w_t(i) \mathbb{I}[y_i \neq h_t(x_i)] / \sum_i w_t(i)$.
-    \item Explicitly handle non-performing learners: If $\epsilon_t \ge 1 - 1/K$, $h_t$ is no better than random guessing; boosting is safely terminated early.
-    \item Compute learner weight:
+    \item I fit weak learner $h_t(x)$ using distribution $w_t$.
+    \item I compute weighted error $\epsilon_t = \sum_{i} w_t(i) \mathbb{I}[y_i \neq h_t(x_i)] / \sum_i w_t(i)$.
+    \item If $\epsilon_t \ge 1 - 1/K$, $h_t$ is no better than random guessing (0.975 for 40 classes); boosting is safely terminated early.
+    \item I compute learner weight:
     \begin{equation}
         \alpha_t = \ln\left(\frac{1 - \epsilon_t}{\epsilon_t}\right) + \ln(K - 1).
     \end{equation}
-    \item Update and renormalize sample weights:
+    \item I update and renormalize sample weights:
     \begin{equation}
         w_{t+1}(i) = \frac{w_t(i) \exp(\alpha_t \mathbb{I}[y_i \neq h_t(x_i)])}{\sum_{j} w_{t+1}(j)}.
     \end{equation}
@@ -209,19 +212,19 @@ Ensemble confidence is given by normalized weighted voting:
 \end{equation}
 
 \subsection{Toy 3-Class Audit}
-To verify mathematical correctness, a 3-class, 9-sample synthetic dataset was audited for Round 1:
+To verify mathematical correctness, I tested Round 1 on a 3-class, 9-sample synthetic dataset:
 \begin{itemize}[leftmargin=*]
-    \item Initial weights: $w_1(i) = 1/9 = 0.1111$.
+    \item Initial weights: $w_1(i) = 1/9 \approx 0.1111$.
     \item Ground truth: $[0,0,0, 1,1,1, 2,2,2]$.
     \item Stump predictions: $[0,0,0, 1,1,1, 1,1,1]$ (class 2 misclassified).
     \item Weighted error: $\epsilon_1 = 3/9 = 0.3333$ (threshold $1 - 1/3 = 0.6667$).
     \item Learner weight: $\alpha_1 = \ln(0.6667 / 0.3333) + \ln(2) = 1.3863$.
     \item Updated weights: Correct samples scaled to $0.0556$, misclassified samples scaled to $0.2222$ ($\sum w_2 = 1.000$).
 \end{itemize}
-Our \texttt{CustomSAMMEAdaBoost} implementation produced identical numerical outputs.
+My scratch implementation on faces uses this exact same update rule.
 
 \subsection{Olivetti Hyperparameter Search and Diagnostics}
-We explored weak learner depths $\{1, 2, 3, 4\}$ across $\{10, 25, 50, 100\}$ rounds. As shown in Table~\ref{tab:q2_grid}, validation accuracy monotonically improves with weak learner depth and round count, selecting $\text{depth}=4$ with $100$ rounds (Val Acc: $46.25\%$, Test Acc: $43.75\%$, Train Acc: $100.0\%$).
+I explored weak learner depths $\{1, 2, 3, 4\}$ across $\{10, 25, 50, 100\}$ rounds. As shown in Table~\ref{tab:q2_grid}, validation accuracy improves with weak learner depth and round count, selecting $\text{depth}=4$ with $100$ rounds (Val Acc: $46.25\%$, Test Acc: $43.75\%$, Train Acc: $100.0\%$).
 
 \begin{table}[h]
 \centering
@@ -256,7 +259,7 @@ Depth & Rounds & Train Acc & Val Acc & Test Acc \\
 Figure~\ref{fig:q2_diagnostics} illustrates the four diagnostic trajectories:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Weighted Training Error $\epsilon_t$:} Oscillates between $0.20$ and $0.55$, remaining safely below the random bound $1 - 1/40 = 0.975$.
-    \item \textbf{Learner Weight $\alpha_t$:} Fluctuates around $4.0$ to $5.5$, providing substantial voting authority to rounds that crack difficult classes.
+    \item \textbf{Learner Weight $\alpha_t$:} Fluctuates around $4.0$ to $5.5$, providing voting authority to rounds that crack difficult classes.
     \item \textbf{Maximum Sample Weight:} Rises from uniform $0.0042$ to over $0.071$.
     \item \textbf{Top-10 Heaviest Images:} The top 10 hardest training faces eventually absorb over $40\%$ of the entire probability mass.
 \end{enumerate}
@@ -285,7 +288,7 @@ Learners & Model & Train & Val & Test & Time (s) \\
 \end{tabular}
 \end{table}
 
-\paragraph{Empirical Insights:}
+\paragraph{Discussion:}
 While Boosting trains approximately $4\times$ faster due to shallow depth-4 weak learners, Bagging decisively outperforms Boosting in generalisation accuracy ($86.25\%$ vs. $53.75\%$ at 100 learners). In small-sample facial data ($N=240, D=4096$), boosting's aggressive exponential re-weighting forces later learners to overfit noisy outlier pixels of misclassified faces, degrading generalization.
 
 \paragraph{Heavyweight Sample Inspection:}
@@ -312,7 +315,7 @@ Figure~\ref{fig:q2_masked_face} illustrates Test Sample \#0 (true class 0). Bagg
 \label{sec:q3}
 
 \subsection{Formal Bias-Variance Formulation}
-Holding the clean test set fixed ($N=80$), we generated $R = 30$ independent training sets by sampling 6 images with replacement within each of the 40 identities from that identity's original 6 training images. On each replicate $r \in \{1, \dots, R\}$, we refitted the selected Single Tree, Bagging, and Boosting models without hyperparameter modification.
+Holding the clean test set fixed ($N=80$), I generated $R = 30$ independent training sets by sampling 6 images with replacement within each of the 40 identities from that identity's original 6 training images. On each replicate $r \in \{1, \dots, R\}$, I refitted the selected Single Tree, Bagging, and Boosting models without hyperparameter modification.
 
 Let $p_r(x_i) \in [0, 1]^K$ denote the predicted class probability vector for test face $x_i$, $\bar{p}(x_i) = \frac{1}{R} \sum_{r=1}^R p_r(x_i)$ its expectation over resamples, and $e_i \in \{0, 1\}^K$ the one-hot ground truth vector. The measured vector quantities are defined as:
 \begin{align}
@@ -341,13 +344,13 @@ Boosting & 0.8798 & 0.0187 & 0.8985 & 34.71\% $\pm$ 9.2\% \\
 
 \paragraph{Key Observations:}
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Single Tree:} Exhibits severe variance ($0.6266$) due to high instability on small-sample facial splits ($N_{\text{class}}=6$), leading to a massive total expected loss of $1.0075$.
-    \item \textbf{Bagging ($B=25$):} Slashing variance by over \textbf{92.3\%} (from $0.6266$ down to $0.0481$). Consequently, the total expected error drops by nearly half ($0.5547$), and test accuracy leaps from $49.62\%$ to $71.04\%$.
+    \item \textbf{Single Tree:} Exhibits severe variance ($0.6266$) due to high instability on small-sample facial splits ($N_{\text{class}}=6$), leading to a total expected loss of $1.0075$.
+    \item \textbf{Bagging ($B=25$):} Slashes variance by over \textbf{92.3\%} (from $0.6266$ down to $0.0481$). Consequently, the total expected error drops by nearly half ($0.5547$), and test accuracy leaps from $49.62\%$ to $71.04\%$.
     \item \textbf{Boosting ($d=4, r=100$):} Exhibits ultra-low variance ($0.0187$), but very high bias ($0.8798$). Shallow depth-4 trees lack the capacity to simultaneously partition 40 distinct identities, creating representational bias that cannot be overcome by voting.
 \end{itemize}
 
 \subsection{Depth Variation Study}
-We evaluated single trees and 100-tree bagging ensembles across three distinct depth regimes:
+I evaluated single trees and 100-tree bagging ensembles across three distinct depth regimes:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Shallow:} $\text{max\_depth}=4, \text{min\_samples\_leaf}=1$
     \item \textbf{Selected:} $\text{max\_depth}=\text{None}, \text{min\_samples\_leaf}=2$
@@ -386,9 +389,9 @@ Deep ($d=16, 1$) & 0.6374 & 0.2214 & 0.6605 & 0.0198 & 0.2016 (91.1\%) & +36.5\%
 \end{figure}
 
 \subsection{Critical Analysis: Is Deepest Always Best for Bagging?}
-\paragraph{Theoretical vs. Empirical Reality:}
-Classical machine learning lore suggests that bagging performs best with maximally deep, unconstrained trees because bagging exclusively reduces variance without altering bias. Under this logic, one should grow trees to absolute purity ($\text{depth}=\text{None}, \text{leaf}=1$).
-However, our empirical data refutes this claim:
+\paragraph{Finding: No.}
+Conventional machine learning lore suggests that bagging performs best with maximally deep, unconstrained trees because bagging exclusively reduces variance without altering bias. Under this logic, one should grow trees to absolute purity ($\text{depth}=\text{None}, \text{leaf}=1$).
+However, my empirical data refutes this claim:
 \begin{itemize}[leftmargin=*]
     \item Comparing the \textbf{Selected} depth ($\text{leaf}=2$) against the \textbf{Deep} depth ($\text{leaf}=1$), the unconstrained deep tree increases base tree variance from $0.4912$ to $0.5420$ with negligible reduction in bias ($0.8124 \to 0.7915$).
     \item When bagged ($B=100$), the ensemble test accuracy improvement is actually \textbf{larger} for the regularized tree ($+35.8\%$) than for the maximally deep unconstrained tree ($+34.5\%$).
@@ -417,12 +420,12 @@ Boosting ($d=4, r=100$) & 43.75\% & 32.50\% & 0.8798 & 0.0187 \\
 \paragraph{Synthesis Discussion:}
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Most Stable Model:} Bagging ($B=25$) is decisively the most stable model, exhibiting both dramatic variance reduction across training resamples ($0.6266 \to 0.0481$, a \textbf{92.3\%} drop) and high resilience under structural occlusion ($78.75\% \to 55.00\%$).
-    \item \textbf{Most Sensitive to Missing Region:} The Single Tree is catastrophically vulnerable to missing regions, plunging from $50.0\%$ to $5.0\%$ (near random guess $1/40 = 2.5\%$). Its greedy, non-redundant coordinate splits fail when the central $16 \times 16$ facial patch is zeroed out.
+    \item \textbf{Most Sensitive to Missing Region:} The Single Tree is catastrophically vulnerable to missing regions, plunging from $50.0\%$ to $5.0\%$ (near random guess $1/40 = 2.5\%$). Its greedy coordinate splits fail when the central $16 \times 16$ facial patch is zeroed out.
     \item \textbf{Is Lowest Variance Necessarily the Best Model?} No. SAMME Boosting achieves the lowest variance of all three models ($0.0187$), yet its test accuracy is poor ($43.75\%$ clean, $32.50\%$ masked) because its squared bias remains stubbornly elevated ($0.8798$). Generalization depends on minimizing total risk ($\text{Bias}^2 + \text{Variance}$), which Bagging optimizes best ($0.5547$ vs. $1.0075$ for single tree and $0.8985$ for boosting).
 \end{enumerate}
 
 \section{Conclusion}
-This investigation demonstrates the divergent operational mechanics of Bagging and Boosting on high-dimensional raw image data. Bagging excels by leveraging diverse, uncorrelated, low-bias decision trees to eliminate variance without degrading representational capacity, exhibiting strong resilience to structural occlusions. Conversely, SAMME AdaBoost suffers from sensitivity to difficult facial outliers, where exponential reweighting causes later learners to fixate on non-generalizable artifacts. Our quantitative bias-variance measurements confirm that bagging removes over $90\%$ of estimator variance while highlighting that regularized leaf occupancy outperforms unconstrained depth.
+In this assignment, I demonstrated the real-world differences between Bagging and Boosting on raw image data. Bagging works wonderfully because diverse, low-bias decision trees cancel out each other's variance errors while retaining facial recognition capabilities under occlusion. In contrast, SAMME AdaBoost struggles because it repeatedly inflates the weights of hard, noisy images, trapping shallow trees in repetitive errors. Finally, my bias-variance measurements prove that light regularization ($\text{min\_samples\_leaf}=2$) beats unconstrained deep trees by eliminating noise memorization.
 
 {\small
 \bibliographystyle{ieee_fullname}
