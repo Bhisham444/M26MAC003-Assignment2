@@ -1,7 +1,7 @@
-# Configuration for Machine Learning Assignment 2
-# Student: Bhisham Sharma
+#  Machine Learning Assignment 2
+# Name: Bhisham Sharma
 # Roll Number: M26MAC003
-# Seed: Derived from numeric characters of roll number (26003)
+# Seed: My Roll no  numeric characters (26003)
 
 student:
   name: "Bhisham Sharma"
