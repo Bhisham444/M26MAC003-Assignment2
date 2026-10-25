@@ -3,7 +3,7 @@
 **Machine Learning  — Assignment 2**  
 - **Name**: Bhisham Sharma  
 - **Roll Number:** M26MAC003  
-- **Deterministic Seed:** 26003 (roll number numerical value: `2`, `6`, `0`, `0`, `3`)  
+- **Seed:** 26003 (My roll number numerical value: `2`, `6`, `0`, `0`, `3`)  
 - **Repository:** `https://github.com/Bhisham444/M26MAC003-Assignment2`  
 
 ---
