@@ -1,7 +1,7 @@
 # Bagging, Boosting, and Bias-Variance on Face Identification
 
 **Machine Learning (CS/AI) — Assignment 2**  
-- ** Name:** Bhisham Sharma  
+- **Name**: Bhisham Sharma  
 - **Roll Number:** M26MAC003  
 - **Deterministic Seed:** 26003 (roll number numerical value: `2`, `6`, `0`, `0`, `3`)  
 - **Repository:** `https://github.com/Bhisham444/M26MAC003-Assignment2`  
@@ -10,7 +10,7 @@
 ---
 
 ## 📌 Project Overview
-This repository contains the complete, modular Python implementation and experimental suite for evaluating **Decision Tree Baselines**, **Bootstrap Aggregation (Bagging) from scratch**, and **Multiclass SAMME AdaBoost from scratch** on the AT&T Olivetti Faces dataset ($400$ images, $40$ identities, $64 \times 64$ raw flattened pixels $= 4096$ dimensions).
+This repository contains the complete, Python implementation and experimental suite for evaluating **Decision Tree Baselines**, **Bootstrap Aggregation (Bagging) from scratch**, and **Multiclass SAMME AdaBoost from scratch** on the AT&T Olivetti Faces dataset ($400$ images, $40$ identities, $64 \times 64$ raw flattened pixels $= 4096$ dimensions).
 
 All algorithms adhere strictly to the assignment specifications:
 - No PCA or dimensionality reduction is applied; all models operate on raw flattened pixels.
