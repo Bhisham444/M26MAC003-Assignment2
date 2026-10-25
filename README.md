@@ -1,4 +1,4 @@
-# Empirical Bias-Variance Decomposition and Robustness of Ensemble Methods on Face Identification
+# Bagging, Boosting, and Bias-Variance on Face Identification
 
 **Machine Learning (CS/AI) — Assignment 2**  
 - **Student Name:** Bhisham Sharma  
