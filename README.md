@@ -131,7 +131,7 @@ python experiments/run_q3.py
 ```
 - Generates $R = 30$ identity-stratified bootstrap training sets.
 - Refits Single Tree, Bagging ($B=25$), and Boosting ($d=4, r=100$) models.
-- Measures $\text{Bias}^2 = \frac{1}{N} \sum_i \|\bar{p}(x_i) - e_i\|_2^2$ and $\text{Variance} = \frac{1}{NR} \sum_{i,r} \|p_r(x_i) - \bar{p}(x_i)\|_2^2$.
+- Measures bias
 - Performs depth study: Shallow (depth 4) vs. Selected (None, leaf 2) vs. Deep (None, leaf 1).
 - Generates `figures/q3_bias_variance_depth.png` and `figures/q3_decomposition_bars.png`.
 
