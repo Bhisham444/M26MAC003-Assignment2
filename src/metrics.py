@@ -1,9 +1,3 @@
-"""
-Metrics module for Bias-Variance decomposition, margin, disagreement, and error statistics.
-Implements the exact vector formulas specified in Assignment 2:
-Bias^2 = (1/N) * sum_i || \bar{p}(x_i) - e_i ||_2^2
-Variance = (1 / (N*R)) * sum_{i,r} || p_r(x_i) - \bar{p}(x_i) ||_2^2
-"""
 
 import numpy as np
 from typing import Tuple, Dict
@@ -41,14 +35,14 @@ def compute_bias_variance(p_runs: np.ndarray, y_true: np.ndarray, n_classes: int
     # One-hot target matrix e_i: shape (N, K)
     e = one_hot_encode(y_true, n_classes=K)
     
-    # Mean prediction vector over R repetitions: \bar{p}(x_i), shape (N, K)
+    # Mean prediction 
     p_bar = np.mean(p_runs, axis=0) # (N, K)
     
-    # Bias^2 = (1 / N) * sum_i || \bar{p}(x_i) - e_i ||_2^2
+    # Bias^2 = 
     diff_bias = p_bar - e # (N, K)
     bias_squared = float(np.mean(np.sum(diff_bias ** 2, axis=1)))
     
-    # Variance = (1 / (N * R)) * sum_{i,r} || p_r(x_i) - \bar{p}(x_i) ||_2^2
+    # Variance 
     # p_runs is (R, N, K), p_bar is (N, K) -> broadcast along R
     diff_var = p_runs - p_bar[np.newaxis, :, :] # (R, N, K)
     variance = float(np.mean(np.sum(diff_var ** 2, axis=2)))

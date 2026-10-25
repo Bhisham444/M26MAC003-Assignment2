@@ -1,9 +1,4 @@
-"""
-Custom implementation of Multiclass SAMME AdaBoost from scratch.
-Supports depth-limited DecisionTreeClassifier weak learners,
-explicit handling of weak learners not better than random guessing,
-normalized weighted voting, sample weight tracking, and prediction history.
-"""
+
 
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier

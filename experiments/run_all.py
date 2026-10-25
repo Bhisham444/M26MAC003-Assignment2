@@ -1,13 +1,4 @@
-"""
-Master end-to-end execution script for Machine Learning Assignment 2.
-Student: Bhisham Sharma | Roll Number: M26MAC003
 
-Runs the entire experimental pipeline deterministically:
-1. Dataset preparation & identity-stratified train/val/test splitting.
-2. Q1: Single Tree baseline grid search, Custom Bagging, OOB, disagreement, and margin plots.
-3. Q2: 3-Class toy SAMME verification, Olivetti boosting grid search, diagnostic plots, comparison.
-4. Q3: 30-repetition Bias-Variance decomposition, depth analysis, and master synthesis table.
-"""
 
 import os
 import sys
@@ -23,9 +14,9 @@ from experiments.run_q3 import run_q3
 def main():
     start_total = time.time()
     print("=" * 80)
-    print("STARTING FULL REPRODUCTION PIPELINE: MACHINE LEARNING ASSIGNMENT 2")
+    print("MACHINE LEARNING ASSIGNMENT 2")
     print("Student: Bhisham Sharma | Roll Number: M26MAC003")
-    print("Deterministic Seed: 26003 (Derived from roll number digits)")
+    print("Deterministic Seed: 26003 ")
     print("=" * 80)
 
     # Question 1

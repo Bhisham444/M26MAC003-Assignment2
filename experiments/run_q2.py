@@ -1,12 +1,4 @@
-"""
-Experiment script for Question 2:
-- 3-class toy example verification (<= 10 samples) with full step-by-step logging of SAMME round 1.
-- Grid search over weak learner depths {1, 2, 3, 4} and rounds {10, 25, 50, 100}.
-- Diagnostic plots for the selected model: weighted error, learner weight, max sample weight, top-10 weight.
-- Head-to-head comparison between Bagging and Boosting at 25, 50, 100 learners (accuracy + training time).
-- Heavyweight sample inspection: prediction history and theoretical rationale.
-- Clean vs Masked evaluation across single tree, bagging, and boosting, plus case study of divergent face.
-"""
+
 
 import os
 import sys
@@ -18,7 +10,7 @@ import matplotlib
 matplotlib.use("Agg")
 from sklearn.tree import DecisionTreeClassifier
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))  
 
 from src.dataset import load_and_prepare_data
 from src.bagging import CustomBaggingClassifier
@@ -49,7 +41,7 @@ def run_q2():
     log("Student: Bhisham Sharma | Roll Number: M26MAC003")
     log("=" * 80)
 
-    # 1. Load data
+     #Load data
     data = load_and_prepare_data(roll_number="M26MAC003")
     X_train, y_train = data["X_train"], data["y_train"]
     X_val, y_val = data["X_val"], data["y_val"]
@@ -68,11 +60,11 @@ def run_q2():
     frozen_tree = q1_ckpt["best_tree"]
     frozen_bagging = q1_ckpt["trained_bagging_models"][final_B]
 
-    # ---------------------------------------------------------
-    # Part 2(a): 3-Class Toy Example (<= 10 samples)
-    # ---------------------------------------------------------
+   
+    # Q 2(a): 3-Class Toy Example 
+   
     log("\n--- Part 2(a): 3-Class Synthetic Example (Round 1 Step-by-Step Logging) ---")
-    # 9 synthetic 2D points (3 classes, 3 samples each)
+    
     toy_rng = np.random.default_rng(seed)
     X_toy = np.array([
         [1.0, 2.0], [1.5, 1.8], [2.0, 2.5],  # Class 0
@@ -85,12 +77,12 @@ def run_q2():
 
     log(f"Toy Dataset: N={N_toy} samples, K={K_toy} classes.")
     
-    # Run 1 complete SAMME round step by step
-    # 1. Initial weights: w_1(i) = 1/N
+    
+    # 1. Initial weights:  = 1/N
     w_initial = np.ones(N_toy) / float(N_toy)
     log(f"1. Initial Sample Weights w_1:\n   {np.round(w_initial, 4).tolist()}")
 
-    # 2. Fit weak learner (depth 1 decision stump)
+    # 2. Fit weak learner 
     stump = DecisionTreeClassifier(max_depth=1, random_state=seed)
     stump.fit(X_toy, y_toy, sample_weight=w_initial)
     toy_preds = stump.predict(X_toy)
@@ -105,25 +97,25 @@ def run_q2():
     log(f"3. Weighted Training Error epsilon_1 = {weighted_err:.4f}")
     log(f"   Random multiclass error bound (1 - 1/K) = {1 - 1/K_toy:.4f}")
 
-    # 4. Compute alpha_1 = ln((1 - eps)/eps) + ln(K - 1)
+    # 4. Compute alpha_1
     alpha_1 = np.log((1.0 - weighted_err) / weighted_err) + np.log(K_toy - 1)
     log(f"4. Learner Weight alpha_1 = ln(({1-weighted_err:.4f})/{weighted_err:.4f}) + ln({K_toy-1}) = {alpha_1:.4f}")
 
-    # 5. Update weights: w_2(i) = w_1(i) * exp(alpha_1 * I(y_i != h_1(x_i)))
+    # 5. Update weights:
     w_unnorm = w_initial * np.exp(alpha_1 * misclassified)
     w_updated = w_unnorm / np.sum(w_unnorm)
     log(f"5. Updated Normalized Sample Weights w_2:\n   {np.round(w_updated, 4).tolist()}")
     log(f"   Sum of updated weights: {np.sum(w_updated):.6f}")
 
-    # Verify CustomSAMMEAdaBoost class produces identical round 1 result
+    # Verify CustomSAMMEAdaBoost 
     toy_booster = CustomSAMMEAdaBoost(base_depth=1, n_rounds=1, random_state=seed)
     toy_booster.fit(X_toy, y_toy)
     assert np.isclose(toy_booster.estimator_weights_[0], alpha_1), "Alpha mismatch!"
     log("   [Verified] CustomSAMMEAdaBoost class update exactly matches manual computation!\n")
 
-    # ---------------------------------------------------------
-    # Part 2(b): Grid Search on Olivetti Faces & Diagnostics
-    # ---------------------------------------------------------
+   
+    # Part 2(b):
+   
     log("--- Part 2(b): SAMME Grid Search on Olivetti Faces ---")
     depths = [1, 2, 3, 4]
     rounds_list = [10, 25, 50, 100]
@@ -157,7 +149,7 @@ def run_q2():
                 "actual_rounds": actual_r
             })
 
-            # Select strictly on clean validation accuracy
+         
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 best_depth = d
@@ -179,9 +171,9 @@ def run_q2():
         save_path="figures/q2_diagnostics.png"
     )
 
-    # ---------------------------------------------------------
-    # Part 2(c): Boosting vs Bagging (25, 50, 100 learners)
-    # ---------------------------------------------------------
+    
+    # Q 2(c): 
+   
     log("--- Part 2(c): Head-to-Head Comparison: Bagging vs. Boosting ---")
     comp_rounds = [25, 50, 100]
     comparison_table = []
@@ -195,7 +187,7 @@ def run_q2():
     single_tree_time = time.time() - t_tree_start
 
     for n_learners in comp_rounds:
-        # Bagging (reuse models trained in Q1)
+        # Bagging (reuse models  in Q1)
         bag_m = q1_ckpt["trained_bagging_models"].get(n_learners)
         if bag_m is None:
             t0 = time.time()
@@ -258,9 +250,8 @@ def run_q2():
         save_path="figures/q2_heavy_sample_history.png"
     )
 
-    # ---------------------------------------------------------
-    # Part 2(d): Clean vs Masked Evaluation (Tree vs Bagging vs Boosting)
-    # ---------------------------------------------------------
+    
+    # Q. 2(d): 
     log("\n--- Part 2(d): Robustness on Clean and Masked Test Sets ---")
     
     # 1. Single tree
@@ -289,7 +280,7 @@ def run_q2():
     log("-" * 68)
 
     # Find one face where bagging and boosting respond differently to the missing region
-    # e.g., Bagging maintains correct prediction on masked, but boosting fails; or vice versa
+    
     bag_clean_preds = frozen_bagging.predict(X_test)
     bag_mask_preds = frozen_bagging.predict(X_test_masked)
     boost_clean_preds = best_booster.predict(X_test)
@@ -297,7 +288,7 @@ def run_q2():
 
     diff_idx = None
     for i in range(len(y_test)):
-        # Looking for case where bagging survives mask or behaves differently
+        # case where bagging survives mask or behaves differently
         bag_correct_mask = (bag_mask_preds[i] == y_test[i])
         boost_correct_mask = (boost_mask_preds[i] == y_test[i])
         if bag_correct_mask != boost_correct_mask:
@@ -305,7 +296,7 @@ def run_q2():
             break
 
     if diff_idx is None:
-        # Fallback to any index where predictions differ
+        
         diff_idx = int(np.where(bag_mask_preds != boost_mask_preds)[0][0])
 
     log(f"Discrepant Robustness Case: Test Sample #{diff_idx} (True Class {y_test[diff_idx]})")

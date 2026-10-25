@@ -1,7 +1,4 @@
-"""
-Utility functions for logging, plotting publication-quality figures,
-and exporting results for the CVPR report.
-"""
+
 
 import os
 import numpy as np

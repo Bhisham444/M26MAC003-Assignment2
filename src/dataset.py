@@ -1,8 +1,4 @@
-"""
-Dataset loading and preprocessing module for Olivetti Faces.
-Includes deterministic identity-stratified train/val/test splitting
-and generation of the masked test set for robustness evaluation.
-"""
+# My roll no is M26MAC003 and I used 26003 a sseed
 
 import os
 import re
@@ -14,7 +10,7 @@ def extract_numeric_seed(roll_number: str) -> int:
     """
     Extracts all numeric characters from the roll number in order
     and returns them as an integer seed.
-    Example: 'M26MAC003' -> 26003
+    My Roll no is : 'M26MAC003' ;seed= 26003
     """
     digits = re.findall(r'\d', roll_number)
     if not digits:

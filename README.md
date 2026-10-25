@@ -4,8 +4,8 @@
 - **Student Name:** Bhisham Sharma  
 - **Roll Number:** M26MAC003  
 - **Deterministic Seed:** 26003 (Derived strictly from numeric characters of roll number: `2`, `6`, `0`, `0`, `3`)  
-- **Repository:** `https://github.com/Bhisham444/ml-face-recognition-ensembles`  
-- **Final Commit Hash:** `a98dc1b` (Release `v1.0`)  
+- **Repository:** `https://github.com/Bhisham444/M26MAC003-Assignment2`  
+- **Final Commit Hash:** `27a5509` (Release `v1.0`)  
 
 ---
 
@@ -75,8 +75,8 @@ ml_assignment2/
 ### 2. Installation
 Clone the repository and install the dependencies:
 ```bash
-git clone https://github.com/Bhisham444/ml-face-recognition-ensembles.git
-cd ml-face-recognition-ensembles
+git clone https://github.com/Bhisham444/M26MAC003-Assignment2.git
+cd M26MAC003-Assignment2
 pip install -r requirements.txt
 ```
 

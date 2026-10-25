@@ -47,12 +47,12 @@ Selected Booster Metrics: Train Acc=1.0000, Val Acc=0.4625, Test Acc=0.4375
 --- Part 2(c): Head-to-Head Comparison: Bagging vs. Boosting ---
 Learners   Model        TrainAcc   ValAcc     TestAcc    TrainTime(s)  
 ----------------------------------------------------------------------
-25         Bagging      1.0000     0.8500     0.7875     49.41         
-25         Boosting     0.9500     0.3375     0.4125     10.43         
-50         Bagging      1.0000     0.8250     0.8375     98.81         
-50         Boosting     0.9958     0.4250     0.4500     21.87         
-100        Bagging      1.0000     0.8500     0.8625     197.62        
-100        Boosting     1.0000     0.4875     0.5375     49.52         
+25         Bagging      1.0000     0.7875     0.7750     68.89         
+25         Boosting     0.9500     0.3375     0.4125     12.73         
+50         Bagging      1.0000     0.8125     0.8125     137.79        
+50         Boosting     0.9958     0.4250     0.4500     24.95         
+100        Bagging      1.0000     0.8125     0.8125     275.57        
+100        Boosting     1.0000     0.4875     0.5375     50.44         
 ----------------------------------------------------------------------
 
 Heavyweight Sample Analysis:
@@ -63,7 +63,7 @@ Misclassified in 87 out of 100 boosting rounds (87.0%).
 Model              Clean Acc    Clean Conf   Masked Acc   Masked Conf 
 --------------------------------------------------------------------
 Single Tree        0.5000       0.9563       0.0500       1.0000      
-Bagging (B=25)     0.7875       0.4065       0.5500       0.2750      
+Bagging (B=50)     0.8125       0.3975       0.5125       0.2740      
 Boosting (d=4,r=100) 0.4375       0.1174       0.3250       0.1139      
 --------------------------------------------------------------------
 Discrepant Robustness Case: Test Sample #0 (True Class 0)

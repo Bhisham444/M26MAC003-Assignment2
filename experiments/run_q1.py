@@ -1,11 +1,4 @@
-"""
-Experiment script for Question 1:
-- Single Decision Tree baseline grid search, leaf statistics, and freezing best configuration.
-- Custom Bagging from scratch for B in {1, 5, 10, 25, 50, 100, 200}.
-- Theoretical vs empirical distinct bootstrap samples.
-- OOB accuracy, tree disagreement, and vote margin vs B.
-- Clean vs Masked test evaluation, error analysis with 4 diagnostic face cases.
-"""
+
 
 import os
 import sys
@@ -31,7 +24,7 @@ def run_q1():
     log("Student: Bhisham Sharma | Roll Number: M26MAC003")
     log("=" * 80)
 
-    # 1. Load data with deterministic roll-number seed
+    # 1. Load data with  seed M26MAC003
     data = load_and_prepare_data(roll_number="M26MAC003")
     X_train, y_train = data["X_train"], data["y_train"]
     X_val, y_val = data["X_val"], data["y_val"]
@@ -42,9 +35,9 @@ def run_q1():
     log(f"Dataset split: Train={X_train.shape[0]}, Val={X_val.shape[0]}, Test={X_test.shape[0]}")
     log(f"Features: {X_train.shape[1]} raw pixels. Deterministic seed: {seed}\n")
 
-    # ---------------------------------------------------------
-    # Part 1(a): Single Decision Tree Baseline Grid Search
-    # ---------------------------------------------------------
+    
+    # Q. 1(a): 
+   
     log("--- Part 1(a): Single Decision Tree Baseline Grid Search ---")
     max_depths = [2, 4, 8, 16, None]
     min_samples_leafs = [1, 2, 4]
@@ -92,7 +85,7 @@ def run_q1():
             }
             grid_results.append(res)
 
-            # Select model strictly on validation accuracy
+            # Select model  on validation accuracy
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 best_params = {"max_depth": md, "min_samples_leaf": msl}
@@ -102,9 +95,8 @@ def run_q1():
     log(f"Selected Frozen Setting (Validation-driven): max_depth={best_params['max_depth']}, min_samples_leaf={best_params['min_samples_leaf']}")
     log(f"Frozen Single Tree Metrics: Train Acc={best_tree.score(X_train, y_train):.4f}, Val Acc={best_val_acc:.4f}, Test Acc={best_tree.score(X_test, y_test):.4f}\n")
 
-    # ---------------------------------------------------------
-    # Part 1(b) & 1(c): Custom Bagging Classifier
-    # ---------------------------------------------------------
+    
+    # Q. 1(b) & 1(c): 
     log("--- Part 1(b) & 1(c): Custom Bagging Classifier Evaluation ---")
     B_list = [1, 5, 10, 25, 50, 100, 200]
     N = X_train.shape[0]
@@ -188,15 +180,15 @@ def run_q1():
         save_path="figures/q1_oob_disagreement_margin.png"
     )
 
-    # Select final ensemble size B using validation accuracy
+    
     best_B_idx = int(np.argmax(val_accs))
     final_B = B_list[best_B_idx]
     final_bagged_model = trained_bagging_models[final_B]
     log(f"Selected Final Ensemble Size (Validation-driven): B = {final_B} (Val Acc: {val_accs[best_B_idx]:.4f})\n")
 
-    # ---------------------------------------------------------
-    # Part 1(d): Robustness and Error Inspection (Clean vs Masked)
-    # ---------------------------------------------------------
+    
+    # Q.1(d):
+   
     log("--- Part 1(d): Clean vs. Masked Robustness & Error Analysis ---")
     
     # Clean Test
@@ -219,7 +211,7 @@ def run_q1():
     log(f"{f'Bagging (B={final_B})':<20} {bag_clean_acc:<12.4f} {bag_clean_conf:<12.4f} {bag_mask_acc:<12.4f} {bag_mask_conf:<12.4f}")
     log("-" * 70)
 
-    # Detailed face case study on clean test set
+    #  face case study on clean test set
     tree_preds = best_tree.predict(X_test)
     bag_preds = final_bagged_model.predict(X_test)
     bag_votes = final_bagged_model.predict_vote_counts(X_test)

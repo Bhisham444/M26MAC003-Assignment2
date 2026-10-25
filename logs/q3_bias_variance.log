@@ -4,50 +4,21 @@ Student: Bhisham Sharma | Roll Number: M26MAC003
 ================================================================================
 Selected Frozen Settings:
    Single Tree:  max_depth=None, min_samples_leaf=2
-   Final Bagging: B=25
+   Final Bagging: B=50
    Selected Boosting: depth=4, rounds=100
 
 Generating 30 resampled training sets (identity-stratified with replacement)...
+[Resuming from checkpoint: 30/30 refits already complete]
 
 --- Part 3(a): Fitting Selected Models across 30 Replicates ---
 Replicate    Tree Acc     Bagging Acc    Boosting Acc   Elapsed(s)  
 -----------------------------------------------------------------
-Rep 1        0.5750       0.7500         0.3125         125.67      
-Rep 2        0.4500       0.7250         0.3500         124.75      
-Rep 3        0.4250       0.6500         0.4250         124.67      
-Rep 4        0.5750       0.6500         0.3125         124.53      
-Rep 5        0.5750       0.7875         0.5375         126.68      
-Rep 6        0.4750       0.7250         0.2875         127.12      
-Rep 7        0.3500       0.6875         0.3250         125.44      
-Rep 8        0.4875       0.6625         0.4125         126.52      
-Rep 9        0.5625       0.7375         0.2625         128.01      
-Rep 10       0.5000       0.7000         0.5125         129.13      
-Rep 11       0.4250       0.6875         0.3375         125.99      
-Rep 12       0.5375       0.7750         0.3500         125.44      
-Rep 13       0.5500       0.6875         0.3250         124.62      
-Rep 14       0.5000       0.7500         0.3625         126.72      
-Rep 15       0.5625       0.7500         0.4750         125.03      
-Rep 16       0.5625       0.6625         0.4125         125.04      
-Rep 17       0.5250       0.7125         0.1750         118.60      
-Rep 18       0.4750       0.7125         0.4500         923.98      
-Rep 19       0.4625       0.7000         0.2250         103.99      
-Rep 20       0.5500       0.7125         0.3625         109.94      
-Rep 21       0.4750       0.6250         0.2250         100.01      
-Rep 22       0.5500       0.6875         0.2625         99.89       
-Rep 23       0.4250       0.7125         0.4500         103.53      
-Rep 24       0.4625       0.7375         0.3250         99.33       
-Rep 25       0.4625       0.7625         0.3000         4400.36     
-Rep 26       0.5750       0.7250         0.4125         96.17       
-Rep 27       0.4625       0.6750         0.1750         93.19       
-Rep 28       0.4500       0.6500         0.3625         96.80       
-Rep 29       0.5000       0.7500         0.2375         96.83       
-Rep 30       0.4000       0.7625         0.4500         100.10      
 
 ================================================================================
 Model                  Bias^2       Variance     Total Loss   Mean Test Acc   
 --------------------------------------------------------------------------------
 Selected Single Tree   0.3809       0.6266       1.0075       0.4962 +/- 0.0593
-Bagging (B=25)         0.5066       0.0481       0.5547       0.7104 +/- 0.0410
+Bagging (B=50)         0.5066       0.0481       0.5547       0.7104 +/- 0.0410
 Boosting (d=4,r=100)   0.8798       0.0187       0.8985       0.3471 +/- 0.0925
 ================================================================================
 
@@ -63,16 +34,3 @@ Evaluating Selected (None, leaf=2): {'max_depth': None, 'min_samples_leaf': 2}..
    Variance Removed: 0.6022 (96.1%), Acc Gain: +27.42%
 
 Evaluating Deep (Depth 16): {'max_depth': 16, 'min_samples_leaf': 1}...
-   Single Tree: Bias^2=0.6374, Var=0.2214, Acc=28.17%
-   100-Bagging: Bias^2=0.6605, Var=0.0198, Acc=64.63%
-   Variance Removed: 0.2016 (91.1%), Acc Gain: +36.46%
-
---- Part 3(d): Master Synthesis Table ---
-Model                     Clean Test Acc   Masked Test Acc   Bias^2       Variance    
-----------------------------------------------------------------------------------
-Selected Single Tree      0.5000           0.0500            0.3809       0.6266      
-Bagging (B=25)            0.7875           0.5500            0.5066       0.0481      
-Boosting (d=4,r=100)      0.4375           0.3250            0.8798       0.0187      
-----------------------------------------------------------------------------------
-
-[Success] Q3 experiments complete. Summary saved to data/q3_summary.json

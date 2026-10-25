@@ -33,27 +33,27 @@ Theoretical expected distinct samples per bootstrap: 151.89 (63.29% of 240)
 B      TrainAcc   ValAcc     TestAcc    AvgDistinct    OOBAcc     Disagreement   VoteMargin  
 ----------------------------------------------------------------------------------------
 Training master Bagging ensemble of B_max=200 trees...
-1      0.7125     0.3500     0.4500     153.00         0.3563     0.0000         1.0000      
-5      0.9458     0.6125     0.6000     152.60         0.3333     0.7838         0.2525      
-10     0.9917     0.7250     0.6875     151.80         0.4388     0.7919         0.2513      
-25     1.0000     0.8500     0.7875     151.64         0.5917     0.8022         0.2415      
-50     1.0000     0.8250     0.8375     152.74         0.7167     0.8008         0.2555      
-100    1.0000     0.8500     0.8625     152.71         0.7750     0.7997         0.2626      
-200    1.0000     0.8250     0.8750     152.16         0.8042     0.8007         0.2612      
+1      0.6750     0.2875     0.3625     153.00         0.2529     0.0000         1.0000      
+5      0.9542     0.4875     0.5625     152.40         0.3458     0.8063         0.2100      
+10     0.9917     0.6000     0.7000     151.40         0.4160     0.8019         0.2150      
+25     1.0000     0.7875     0.7750     151.28         0.6333     0.8111         0.2340      
+50     1.0000     0.8125     0.8125     152.54         0.7333     0.7972         0.2515      
+100    1.0000     0.8125     0.8125     152.71         0.7750     0.7978         0.2538      
+200    1.0000     0.8125     0.8500     151.91         0.8125     0.8039         0.2544      
 ----------------------------------------------------------------------------------------
-Selected Final Ensemble Size (Validation-driven): B = 25 (Val Acc: 0.8500)
+Selected Final Ensemble Size (Validation-driven): B = 50 (Val Acc: 0.8125)
 
 --- Part 1(d): Clean vs. Masked Robustness & Error Analysis ---
 Model                Clean Acc    Clean Conf   Masked Acc   Masked Conf 
 ----------------------------------------------------------------------
 Single Tree          0.5000       0.9563       0.0500       1.0000      
-Bagging (B=25)       0.7875       0.4065       0.5500       0.2750      
+Bagging (B=50)       0.8125       0.3975       0.5125       0.2740      
 ----------------------------------------------------------------------
 
 Diagnostic Cases Identified:
-Corrected Case 1: Test Sample #1 | True: 0 | Tree: 7 | Bag: 0 (Votes: 8/25)
-Corrected Case 2: Test Sample #2 | True: 1 | Tree: 8 | Bag: 1 (Votes: 11/25)
-Both Wrong Case 1: Test Sample #9 | True: 4 | Tree: 8 | Bag: 2 (Votes: 6/25)
-Both Wrong Case 2: Test Sample #18 | True: 9 | Tree: 24 | Bag: 16 (Votes: 4/25)
+Corrected Case 1: Test Sample #1 | True: 0 | Tree: 7 | Bag: 0 (Votes: 19/50)
+Corrected Case 2: Test Sample #2 | True: 1 | Tree: 8 | Bag: 1 (Votes: 18/50)
+Both Wrong Case 1: Test Sample #6 | True: 3 | Tree: 25 | Bag: 12 (Votes: 7/50)
+Both Wrong Case 2: Test Sample #9 | True: 4 | Tree: 8 | Bag: 2 (Votes: 11/50)
 
 [Success] Q1 experiments complete. Summary saved to data/q1_summary.json

@@ -1,12 +1,4 @@
-"""
-Experiment script for Question 3:
-- Bias-Variance decomposition across R=30 resampled training sets.
-- Vector L2-norm formulas for Bias^2 and Variance.
-- Mean and std of clean test accuracy across 30 refits for Single Tree, Bagging, and Boosting.
-- Depth comparison: Shallow (Depth 4), Selected (Depth None, leaf=2), Deep (Depth 16)
-  for Single Tree vs 100-Tree Bagging.
-- Incremental checkpointing per repetition so progress is continuously preserved.
-"""
+
 
 import os
 import sys
@@ -20,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.dataset import load_and_prepare_data
+from src.dataset import load_and_prepare_data  # my roll no is M26MAC003 --seed- 26003
 from src.bagging import CustomBaggingClassifier
 from src.boosting import CustomSAMMEAdaBoost
 from src.metrics import compute_bias_variance
@@ -129,9 +121,9 @@ def run_q3():
         accs_boost = []
         accs_bag_100 = []
 
-    # ---------------------------------------------------------
-    # Part 3(a): 30 Refits for Selected Models
-    # ---------------------------------------------------------
+    
+    # Q 3(a): 
+    
     log("\n--- Part 3(a): Fitting Selected Models across 30 Replicates ---")
     log(f"{'Replicate':<12} {'Tree Acc':<12} {'Bagging Acc':<14} {'Boosting Acc':<14} {'Elapsed(s)':<12}")
     log("-" * 65)
@@ -140,7 +132,7 @@ def run_q3():
         t0 = time.time()
         X_r, y_r = resampled_sets[r]
 
-        # 1. Single Tree
+        # Single Tree
         tree = DecisionTreeClassifier(**best_tree_params, random_state=seed + r * 10)
         tree.fit(X_r, y_r)
         proba_t = tree.predict_proba(X_test)
@@ -152,7 +144,7 @@ def run_q3():
         acc_t = float(np.mean(np.argmax(proba_t, axis=1) == y_test))
         accs_tree.append(acc_t)
 
-        # 2. Bagging: Fit 100 trees, slice final_B for part a, use 100 for part b
+        #  Bagging: Fit 100 trees
         bag = CustomBaggingClassifier(
             base_estimator_params=best_tree_params,
             n_estimators=100,
@@ -172,7 +164,7 @@ def run_q3():
         p_bag_100[r] = proba_b100
         accs_bag_100.append(float(np.mean(np.argmax(proba_b100, axis=1) == y_test)))
 
-        # 3. Boosting (depth 4, rounds 100)
+        #  Boosting (depth 4, rounds 100)
         boost = CustomSAMMEAdaBoost(
             base_depth=best_boost_depth,
             n_rounds=best_boost_rounds,
@@ -214,9 +206,9 @@ def run_q3():
     log(f"{f'Boosting (d={best_boost_depth},r={best_boost_rounds})':<22} {bv_boost['bias_squared']:<12.4f} {bv_boost['variance']:<12.4f} {bv_boost['total_expected_error']:<12.4f} {np.mean(accs_boost):.4f} +/- {np.std(accs_boost):.4f}")
     log("=" * 80 + "\n")
 
-    # ---------------------------------------------------------
-    # Part 3(b): Depth Variation Study (Shallow vs Selected vs Deep)
-    # ---------------------------------------------------------
+   
+    # Q 3(b): 
+
     log("--- Part 3(b): Depth Variation Study (Single Tree vs 100-Tree Bagging) ---")
     depth_configs = [
         {"name": "Shallow (Depth 4)", "params": {"max_depth": 4, "min_samples_leaf": 1}},
@@ -318,9 +310,9 @@ def run_q3():
         save_path="figures/q3_decomposition_bars.png"
     )
 
-    # ---------------------------------------------------------
+    
     # Part 3(d): Master Comparison Table
-    # ---------------------------------------------------------
+    
     log("--- Part 3(d): Master Synthesis Table ---")
     clean_acc_tree = q1_summary["robustness"]["tree_clean_acc"]
     mask_acc_tree = q1_summary["robustness"]["tree_mask_acc"]
