@@ -10,14 +10,16 @@
 ---
 
 ## 📌 Project Overview
-This repository contains the complete, Python implementation and experimental suite for evaluating **Decision Tree Baselines**, **Bootstrap Aggregation (Bagging) from scratch**, and **Multiclass SAMME AdaBoost from scratch** on the AT&T Olivetti Faces dataset ($400$ images, $40$ identities, $64 \times 64$ raw flattened pixels $= 4096$ dimensions).
+## 📌 Project Overview
 
-All algorithms adhere strictly to the assignment specifications:
-- No PCA or dimensionality reduction is applied; all models operate on raw flattened pixels.
-- The base learner is `DecisionTreeClassifier`, while Bagging and Boosting are implemented entirely from scratch.
-- The dataset is split per-identity into 6 train, 2 validation, and 2 test images ($240 / 80 / 80$) using seed `26003`, saved to `data/split_indices.npz` and reused everywhere.
-- A robustness occlusion test set is created by zeroing out the central $16 \times 16$ block (rows and columns 24 to 39).
-- Bias-Variance decomposition is computed empirically across $30$ resampled training sets using vector $L_2$ norm metrics.
+In this project, I explore and implement ensemble learning methods—specifically **Decision Tree baselines**, **Bagging (Bootstrap Aggregation) from scratch**, and **Multi-Class SAMME AdaBoost from scratch**—on the AT&T Olivetti Faces dataset (40 identities, 400 images of size $64 \times 64$, giving 4096 raw pixels per image).
+
+I designed the implementation to strictly follow all assignment guidelines:
+- **No PCA or Dimensionality Reduction:** I train all models directly on the raw 4096-dimensional pixel vectors.
+- **From-Scratch Implementations:** Following the rules, I use scikit-learn only for the weak `DecisionTreeClassifier` base learners, while I implemented the Bagging ensemble and the multi-class SAMME AdaBoost algorithms entirely from scratch in Python.
+- **Identity-Stratified Partitioning:** My  roll number is **M26MAC003**, so I use the deterministic random seed `26003`. For each of the 40 people, I split their 10 images into 6 train (240 total), 2 validation (80 total), and 2 clean test images (80 total). This split is saved in `data/split_indices.npz` and reused across every single run.
+- **Occlusion Robustness:** I generated an occluded test set by zeroing out the central $16 \times 16$ facial patch (rows and columns 24 to 39) to evaluate how well models cope with missing features.
+- **Empirical Bias-Variance Decomposition:** I computed squared bias and variance across 30 resampled training runs using vector $L_2$ norm metrics to study the trade-offs between Bagging and Boosting on raw image data.
 
 ---
 
@@ -102,7 +104,7 @@ python experiments/run_all.py
 
 ### Or Run Question-by-Question:
 
-#### Step 1: Decision Tree Baseline & Bagging from Scratch (Q1)
+#### Q 1: Decision Tree Baseline & Bagging from Scratch (Q1)
 ```bash
 python experiments/run_q1.py
 ```
@@ -112,7 +114,7 @@ python experiments/run_q1.py
 - Verifies distinct bootstrap samples ($\text{theory}=151.89$ vs. $\text{empirical}\approx 152.0$).
 - Generates `figures/q1_oob_disagreement_margin.png` and `figures/q1_error_faces.png`.
 
-#### Step 2: Multiclass SAMME Boosting from Scratch (Q2)
+#### Q .2:Multiclass SAMME Boosting from Scratch (Q2)
 ```bash
 python experiments/run_q2.py
 ```
@@ -123,7 +125,7 @@ python experiments/run_q2.py
 - Audits the heaviest training face (\#204, Class 34) receiving weight $0.0713$ ($17\times$ baseline).
 - Evaluates occlusion divergence on clean vs. masked test sets (`figures/q2_masked_comparison_face.png`).
 
-#### Step 3: Bias-Variance Decomposition (30 Refits) (Q3)
+#### Q.3: Bias-Variance Decomposition (30 Refits) (Q3)
 ```bash
 python experiments/run_q3.py
 ```
@@ -145,10 +147,15 @@ python experiments/run_q3.py
 | **Boosting ($d=4, r=100$)** | 43.75% | 32.50% | 0.7410 | 0.2185 | 0.9595 |
 
 ### 2. Core Takeaways
-1. **Bagging Eliminates Over 83% of Variance:** In high-dimensional pixel space ($D=4096$), single trees suffer from severe instability ($\text{Var}=0.4912$). Bagging averages out idiosyncratic leaf splits, slashing variance to $0.0815$ and lifting test accuracy from $50.0\%$ to $78.75\%$.
-2. **Pathology of Single Trees under Occlusion:** Central $16 \times 16$ occlusion drops single tree accuracy to near random chance ($5.0\%$), yet its prediction confidence surges to $100.0\%$. Bagging retains $55.0\%$ accuracy under occlusion by distributing attention across peripheral face boundaries.
-3. **Boosting Outlier Fixation:** SAMME AdaBoost suffers on small-sample raw faces because exponential sample re-weighting forces later learners to fixate on ambiguous outliers (e.g. sample \#204 absorbing $17\times$ uniform weight), leading to degraded generalization compared to independent bagging.
-4. **Is Deepest Always Best for Bagging?** No. Unconstrained deep trees ($\text{min\_samples\_leaf}=1$) produce singleton leaves ($9.09\%$) that split on sensor noise. Regularizing $\text{min\_samples\_leaf}=2$ yields a larger accuracy gain ($+35.8\%$ vs. $+34.5\%$) and lower total risk.
+### 2. Core Takeaways
+
+1. **Bagging Slashes Single-Tree Variance by Over 83%:** In high-dimensional pixel space (4096 dimensions) with few training faces per person, a single decision tree has severe instability ($\text{Variance} = 0.4912$). By averaging independent trees trained on bootstrap samples, Bagging reduces variance down to $0.0815$, boosting clean test accuracy from $50.00\%$ to $78.75\%$.
+
+2. **Single Trees Collapse under Occlusion:** When the central $16 \times 16$ facial patch is blacked out, a single decision tree's accuracy plunges from $50.0\%$ to just $5.0\%$ (near random chance), yet its prediction confidence remains artificially high ($100\%$). In contrast, Bagging retains $55.0\%$ accuracy under occlusion because different bootstrap trees split on diverse peripheral facial features (forehead, jawline, hair).
+
+3. **Boosting Traps on Hard Outliers:** SAMME AdaBoost struggles on small-sample raw image data. Because it exponentially inflates the weights of misclassified images, subsequent trees get stuck repeatedly trying to fit a few noisy or ambiguous faces (e.g., training face #204 absorbed over $17\times$ the baseline uniform weight). This causes high bias and degrades generalization compared to Bagging.
+
+4. **Is Deepest Always Best for Bagging? No:** Conventional intuition suggests growing trees to maximum depth (`max_depth=None, min_samples_leaf=1`). However, my empirical results show that unconstrained deep trees generate singleton leaves ($9.09\%$ of leaves contain only 1 sample) that overfit to camera noise. Applying light regularization (`min_samples_leaf=2`) eliminates these noise splits and gives better ensemble generalization and stability than growing trees to 100% purity.
 
 ---
 
@@ -162,4 +169,3 @@ bibtex main
 pdflatex main
 pdflatex main
 ```
-Alternatively, upload `report/` directly to **Overleaf** for one-click compilation.
